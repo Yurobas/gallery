@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Gallery
+        link(rel="stylesheet", href="styles.scss")
+    body
+        .wrapper 
+            - var n = 0
+            .gallery
+                ul.gallery__list
+                    while n < 20
+                        - n++
+                        li.gallery__item
+                            img(class="gallery__image", src="image.webp", alt="Картинка")
+        script(src="index.js")
+        

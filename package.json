@@ -1,0 +1,14 @@
+{
+  "name": "gallery",
+  "source": "src/index.pug",
+  "scripts": {
+    "dev": "parcel",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "@parcel/transformer-pug": "^2.8.3",
+    "@parcel/transformer-sass": "^2.8.3",
+    "parcel": "latest"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead"
+}
