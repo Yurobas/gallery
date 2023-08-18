@@ -63,11 +63,13 @@ a {
         top: 0;
         left: 0;
         will-change: transform;
-        transition: .3s;
     }
     &__image {
-        position: absolute;
         display: block;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
         background-color: #1c1c1e;
         cursor: pointer;
     }

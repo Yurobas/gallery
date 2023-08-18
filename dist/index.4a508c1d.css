@@ -58,10 +58,13 @@ a {
 }
 
 .gallery__image {
+  width: 100%;
   cursor: pointer;
   background-color: #1c1c1e;
   display: block;
   position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /*# sourceMappingURL=index.4a508c1d.css.map */
