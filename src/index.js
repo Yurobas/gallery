@@ -11,7 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             this.currentItem = this.items[0]
 
+            this.currentY = 0
+            this.wheelMod = 0
+
             this.listeners()
+
+            this.checkScreen()
             this.setItemsWidth()
             this.setItemsPosition()
         }
@@ -26,21 +31,93 @@ document.addEventListener("DOMContentLoaded", () => {
             this.items.forEach(item => {
                 item.addEventListener('mouseenter', event => {
                     this.currentItem = item
+                    this.setActiveItems(item.dataset.index)
                 })
                 item.addEventListener('touchstart', event => {
                     this.currentItem = item
+                    this.setActiveItems(item.dataset.index)
                 })
             })
 
-            window.addEventListener('wheel', event => {
-                const vector = event.deltaY === 100 ? 1 : 0
+            window.addEventListener('touchstart', event => {
+                this.currentY = event.changedTouches[0].clientY
+            })
+
+            window.addEventListener('touchend', event => {
+                this.currentY = 0
+            })
+
+            window.addEventListener('touchmove', event => {
+                let range = 0
+                let vector = null
+                const y = event.changedTouches[0].clientY
+
+                this.currentY > y ? vector = 1 : vector = 0
+
+                if (vector) {
+                    range = this.currentY - y
+                } else {
+                    range = y - this.currentY
+                }
 
                 for (let i = 0; i < this.columns; i++) {
                     const type = this.currentItem.dataset.index
                     const sibling = i + 1 - type
                     let step
-
+    
                     switch(sibling) {
+                        case 0:
+                            step = +Number(+range / 1.5).toFixed(1)
+                            break;
+                        case 1:
+                            step = +Number(+range / 2).toFixed(1)
+                            break;
+                        case -1:
+                            step = +Number(+range / 2).toFixed(1)
+                            break;
+                        case 2:
+                            step = +Number(+range / 2.5).toFixed(1)
+                            break;
+                        case -2:
+                            step = +Number(+range / 2.5).toFixed(1)
+                            break;
+                        case 3:
+                            step = +Number(+range / 3).toFixed(1)
+                            break;
+                        case -3:
+                            step = +Number(+range / 3).toFixed(1)
+                            break;
+                        case 4:
+                            step = +Number(+range / 4).toFixed(1)
+                            break;
+                        case -4:
+                            step = +Number(+range / 4).toFixed(1)
+                            break;
+                    }
+    
+                    if (sibling === 0) {
+                        this.moveItems(type, vector, step)
+                    } else {
+                        this.moveItems(+type + sibling, vector, step)
+                    }
+                }
+            })
+
+            window.addEventListener('wheel', event => {
+                ++this.wheelMod
+                setTimeout(() => --this.wheelMod, 100)
+
+                const vector = event.deltaY > 0 ? 1 : 0
+
+                for (let i = 0; i < this.columns; i++) {
+                    const type = this.currentItem.dataset.index
+                    const sibling = i + 1 - type
+                    let step
+    
+                    switch(sibling) {
+                        case 0:
+                            step = 36
+                            break;
                         case 1:
                             step = 18
                             break;
@@ -66,11 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             step = 7
                             break;
                     }
-
+    
                     if (sibling === 0) {
-                        this.moveItems(type, vector)
+                        this.moveItems(type, vector, step * this.wheelMod)
                     } else {
-                        this.moveItems(+type + sibling, vector, step)
+                        this.moveItems(+type + sibling, vector, step * this.wheelMod)
                     }
                 }
             })
@@ -89,87 +166,58 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        moveItems(type, vector, step = 36) {
+        setActiveItems(index) {
+            this.items.forEach(item => {
+                item.dataset.index == index ? 
+                    item.classList.add('--active') : 
+                    item.classList.remove('--active')
+            })
+        }
+
+        moveItems(type, vector, step) {
             const groupItems = this.items.filter(item => item.dataset.index == type)
             const end = this.heightGallery - window.innerHeight
 
-            groupItems.forEach((item, index) => {
-                let stop = false
+            groupItems.forEach(item => {
                 let y = +item.dataset.currenty
 
                 if (vector) {
-                    if (+item.dataset.to - step <= +item.dataset.starty - end) {
-                        item.dataset.to = +item.dataset.starty - end
-                    } else {
-                        item.dataset.to = +item.dataset.to - step
-                    }
-
-                    let n = 1
-                    while (n < step) {
-                        if (y <= +item.dataset.starty - end) {
-                            y = +item.dataset.starty - end
-                            item.dataset.currenty = +Number(y).toFixed(5)
-                            item.style.transform = `translate3d(${item.dataset.startx}px, ${y}px, 1px)`
-                            stop = true
-                        }
-                        n++
-                    }
-                    if (!stop) {
-                        this.animate(item, {
-                            duration: 700,
-                            timing: this.makeEaseInOut,
-                            draw: function(progress) {
-                                const value = +Number(y - step * progress).toFixed(5)
-                                if (value <= +item.dataset.starty - end) {
-                                    item.dataset.currenty = +item.dataset.starty - end
-                                    item.style.transform = `translate3d(${item.dataset.startx}px, ${+item.dataset.starty - end}px, 1px)`
-                                } else {
-                                    item.dataset.currenty = value
-                                    item.style.transform = `translate3d(${item.dataset.startx}px, ${value}px, 1px)`
-                                }
-                            }.bind(this)
-                        })
-                    }
+                    this.animate(item, {
+                        duration: 400,
+                        timing: this.makeEaseInOut,
+                        draw: function(progress) {
+                            const value = +Number(y - step * progress).toFixed(1)
+                            if (value <= +item.dataset.starty - end) {
+                                item.dataset.currenty = +item.dataset.starty - end
+                                item.style.transform = `translate3d(${item.dataset.startx}px, ${+item.dataset.starty - end}px, 1px)`
+                            } else {
+                                item.dataset.currenty = value
+                                item.style.transform = `translate3d(${item.dataset.startx}px, ${value}px, 1px)`
+                            }
+                        }.bind(this)
+                    })
                 } else {
-                    if (+item.dataset.to + step >= +item.dataset.starty) {
-                        item.dataset.to = item.dataset.starty
-                    } else {
-                        item.dataset.to = +item.dataset.to + step
-                    }
-
-                    let n = 1
-                    while (n < step) {
-                        if (y >= +item.dataset.starty) {
-                            y = +item.dataset.starty
-                            item.dataset.currenty = +Number(y).toFixed(5)
-                            item.style.transform = `translate3d(${item.dataset.startx}px, ${y}px, 1px)`
-                            stop = true
-                        }
-                        n++
-                    }
-                    if (!stop) {
-                        this.animate(item, {
-                            duration: 700,
-                            timing: this.makeEaseInOut,
-                            draw: function(progress) {
-                                const value = +Number(y + step * progress).toFixed(5)
-                                if (value >= +item.dataset.starty) {
-                                    item.dataset.currenty = +item.dataset.starty
-                                    item.style.transform = `translate3d(${item.dataset.startx}px, ${+item.dataset.starty}px, 1px)`
-                                } else {
-                                    item.dataset.currenty = value
-                                    item.style.transform = `translate3d(${item.dataset.startx}px, ${value}px, 1px)`
-                                }
-                            }.bind(this)
-                        })
-                    }
+                    this.animate(item, {
+                        duration: 400,
+                        timing: this.makeEaseInOut,
+                        draw: function(progress) {
+                            const value = +Number(y + step * progress).toFixed(1)
+                            if (value >= +item.dataset.starty) {
+                                item.dataset.currenty = +item.dataset.starty
+                                item.style.transform = `translate3d(${item.dataset.startx}px, ${+item.dataset.starty}px, 1px)`
+                            } else {
+                                item.dataset.currenty = value
+                                item.style.transform = `translate3d(${item.dataset.startx}px, ${value}px, 1px)`
+                            }
+                        }.bind(this)
+                    })
                 }
             })
         }
 
         setItemsWidth() {
             const screenWidth = window.innerWidth
-            this.widthItem = +Number(screenWidth / this.columns).toFixed(5)
+            this.widthItem = +Number(screenWidth / this.columns).toFixed(1)
 
             this.items.forEach(item => {
                 item.style.width = `${this.widthItem}px`
@@ -182,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let type = 0
 
             const image = this.items[0].querySelector('.gallery__image')
-            this.heightItem = this.heightGallery = +Number(image.getBoundingClientRect().height).toFixed(5) 
+            this.heightItem = this.heightGallery = +Number(image.getBoundingClientRect().height).toFixed(1) 
 
             this.items.forEach((item, index) => {
                 ++type
@@ -193,11 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     type = 1
                 }
 
-                item.dataset.to = 0
                 item.dataset.index = type
-                item.dataset.startx = +Number(this.widthItem * modWidth).toFixed(5)
-                item.dataset.starty = +Number(this.heightItem * modHeight).toFixed(5)
-                item.dataset.currenty = +Number(this.heightItem * modHeight).toFixed(5)
+                item.dataset.startx = +Number(this.widthItem * modWidth).toFixed(1)
+                item.dataset.starty = +Number(this.heightItem * modHeight).toFixed(1)
+                item.dataset.currenty = +Number(this.heightItem * modHeight).toFixed(1)
                 item.style.transform = `translate3d(${this.widthItem * modWidth}px, ${this.heightItem * modHeight}px, 1px)`
 
                 ++modWidth
@@ -223,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     // finish
                 }
-          
             })
         }
 

@@ -14,6 +14,13 @@ html(lang="en")
                     while n < 20
                         - n++
                         li.gallery__item
-                            img(class="gallery__image", src="image.webp", alt="Картинка")
+                            a(class="gallery__link" target="_blank")
+                                img(class="gallery__image", src="image.webp", alt="Картинка")
+                                img(class="gallery__spacer", src="29x35.gif", alt="Картинка")
+                                .gallery__content
+                                    .gallery__name Ecomaster
+                                    .gallery__model WL 2 Firewall
+                                    .gallery__type Напольные пурифайеры
+
         script(src="index.js")
         

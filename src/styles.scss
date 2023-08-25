@@ -8,7 +8,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -56,6 +56,7 @@ a {
         left: 0;
         right: 0;
         bottom: 0;
+        background-color: #1c1c1c;
         z-index: 100;
     }
     &__item {
@@ -63,6 +64,24 @@ a {
         top: 0;
         left: 0;
         will-change: transform;
+        overflow: hidden;
+        &.--active {
+            & .gallery__image {
+                opacity: 0.6;
+            }
+        }
+        &:hover{
+            background-color: #28282b;
+            & .gallery__content {
+                opacity: 1;
+            }
+            & .gallery__name,
+            & .gallery__model,
+            & .gallery__type {
+                transform: translate3d(0, 0, 0);
+                transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1), linear;
+            }
+        }
     }
     &__image {
         display: block;
@@ -70,8 +89,69 @@ a {
         position: absolute;
         top: 0;
         left: 0;
+        opacity: 0.2;
         background-color: #1c1c1e;
+        transition: opacity 0.2s linear;
         cursor: pointer;
+    }
+    &__spacer {
+        display: block;
+        width: 100%;
+    }
+    &__content {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        padding: 0 20px 20px;
+        color: #fff;
+        font-weight: 500;
+        text-transform: uppercase;
+        transition: opacity 0.2s linear;
+    }
+    &__name,
+    &__model {
+        font-size: 18px;
+        line-height: .87931em;
+        @media(min-width: 440px) {
+            font-size: 22px;
+        }
+        @media(min-width: 540px) {
+            font-size: 28px;
+        }
+        @media(min-width: 768px) {
+            font-size: 26px;
+        }
+        @media(min-width: 1360px) {
+            font-size: 30px;
+        }
+    }
+    &__type,
+    &__model {
+        opacity: 0.67;
+    }
+    &__name,
+    &__model,
+    &__type {
+        transition: 0.4s cubic-bezier(0.895, 0.03, 0.685, 0.22);
+    }
+    &__name {
+        transform: translate3d(30px, 0, 0);
+    }
+    &__model {
+        margin-top: 5px;
+        transform: translate3d(-30px, 0, 0);
+    }
+    &__type {
+        margin-top: 14px;
+        font-size: 12px;
+        letter-spacing: .025em;
+        line-height: 1;
+        transform: translate3d(0, 30px, 0);
+        @media(min-width: 440px) {
+            font-size: 14px;
+        }
     }
 }
   
