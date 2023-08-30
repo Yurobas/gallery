@@ -84,31 +84,31 @@ document.addEventListener("DOMContentLoaded", () => {
     
                     switch(sibling) {
                         case 0:
-                            step = +Number(+range / 1.5).toFixed(1)
+                            step = +Number(+range / 1.25).toFixed(1)
                             break;
                         case 1:
-                            step = +Number(+range / 2).toFixed(1)
+                            step = +Number(+range / 1.75).toFixed(1)
                             break;
                         case -1:
-                            step = +Number(+range / 2).toFixed(1)
+                            step = +Number(+range / 1.75).toFixed(1)
                             break;
                         case 2:
-                            step = +Number(+range / 2.5).toFixed(1)
+                            step = +Number(+range / 2).toFixed(1)
                             break;
                         case -2:
-                            step = +Number(+range / 2.5).toFixed(1)
+                            step = +Number(+range / 2).toFixed(1)
                             break;
                         case 3:
-                            step = +Number(+range / 3).toFixed(1)
+                            step = +Number(+range / 2.25).toFixed(1)
                             break;
                         case -3:
-                            step = +Number(+range / 3).toFixed(1)
+                            step = +Number(+range / 2.25).toFixed(1)
                             break;
                         case 4:
-                            step = +Number(+range / 4).toFixed(1)
+                            step = +Number(+range / 2.5).toFixed(1)
                             break;
                         case -4:
-                            step = +Number(+range / 4).toFixed(1)
+                            step = +Number(+range / 2.5).toFixed(1)
                             break;
                     }
     
@@ -133,31 +133,31 @@ document.addEventListener("DOMContentLoaded", () => {
     
                     switch(sibling) {
                         case 0:
-                            step = 36
+                            step = 54
                             break;
                         case 1:
-                            step = 18
+                            step = 27
                             break;
                         case -1:
-                            step = 18
+                            step = 27
                             break;
                         case 2:
-                            step = 12
+                            step = 18
                             break;
                         case -2:
-                            step = 12
+                            step = 18
                             break;
                         case 3:
-                            step = 9
+                            step = 14
                             break;
                         case -3:
-                            step = 9
+                            step = 14
                             break;
                         case 4:
-                            step = 7
+                            step = 10
                             break;
                         case -4:
-                            step = 7
+                            step = 10
                             break;
                     }
     
