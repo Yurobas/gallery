@@ -6,8 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
             this.heightGallery = 0
 
             this.items = [...document.querySelectorAll('.gallery__item')]
+
             this.widthItem = 0
             this.heightItem = 0
+
+            this.widthOpenedItem = 0
+            this.heightOpenedItem = 0
 
             this.currentItem = this.items[0]
 
@@ -33,9 +37,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.currentItem = item
                     this.setActiveItems(item.dataset.index)
                 })
+
+                item.addEventListener('mouseleave', event => {
+                    this.setActiveItems(null)
+                })
+
                 item.addEventListener('touchstart', event => {
                     this.currentItem = item
                     this.setActiveItems(item.dataset.index)
+                })
+
+                item.addEventListener('click', event => {
+                    if (!item.classList.contains('--open')) {
+                        this.openItems(item.dataset.index)
+                    } else {
+                        this.closeItems()
+                    }
                 })
             })
 
@@ -153,24 +170,74 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         }
 
-        checkScreen() {
-            const width = window.innerWidth
-            if (width >= 1200) {
-                this.columns = 5
-            } else if (width < 1200 && width >= 1024) {
-                this.columns = 4
-            } else if (width < 1024 && width >= 768) {
-                this.columns = 3
-            } else {
-                this.columns = 2
-            }
+        openItems(index) {
+            this.setItemsWidth(index)
+            this.setItemsPosition(index)
         }
 
-        setActiveItems(index) {
+        closeItems() {
+            this.setItemsWidth()
+            this.setItemsPosition()
+        }
+
+        setItemsWidth(index = null) {
+            const screenWidth = window.innerWidth
+
+            this.widthItem = +Number(screenWidth / this.columns).toFixed(1)
+            this.widthOpenedItem = +Number(this.widthItem * 1.5).toFixed(1)
+
+            if (index) {
+                this.items.forEach(item => {
+                    if (item.dataset.index == index) {
+                        item.classList.add('--open')
+                        item.style.width = `${this.widthOpenedItem}px`
+                    } else {
+                        item.classList.remove('--open')
+                        item.style.width = `${this.widthItem}px`
+                    }
+                })
+            } else this.items.forEach(item => {
+                item.classList.remove('--open')
+                item.style.width = `${this.widthItem}px`
+            })
+        }
+
+        setItemsPosition(index = null) {
+            let modWidth = 0
+            let modHeight = 0
+            let type = 0
+
+            const image = this.items[0].querySelector('.gallery__image')
+            this.heightItem = this.heightGallery = +Number(image.getBoundingClientRect().height).toFixed(1)
+
             this.items.forEach(item => {
-                item.dataset.index == index ? 
-                    item.classList.add('--active') : 
-                    item.classList.remove('--active')
+
+                ++type
+                if (modWidth === this.columns) {
+                    this.heightGallery += this.heightItem
+                    modWidth = 0
+                    ++modHeight
+                    type = 1
+                }
+
+                item.dataset.index = type
+
+                if (index && item.dataset.index == index) {
+                    const height = +Number(item.getBoundingClientRect().height).toFixed(1)
+                    height != this.heightOpenedItem ? this.heightOpenedItem = height : false
+
+                    item.dataset.starty = +Number(this.heightOpenedItem * modHeight).toFixed(1)
+                    item.dataset.currenty = +Number(this.heightOpenedItem * modHeight).toFixed(1)
+                    item.style.transform = `translate3d(${this.widthItem * modWidth}px, ${this.heightOpenedItem * modHeight}px, 1px)`
+                } else {
+                    item.dataset.starty = +Number(this.heightItem * modHeight).toFixed(1)
+                    item.dataset.currenty = +Number(this.heightItem * modHeight).toFixed(1)
+                    item.style.transform = `translate3d(${this.widthItem * modWidth}px, ${this.heightItem * modHeight}px, 1px)`
+                }
+
+                item.dataset.startx = +Number(this.widthItem * modWidth).toFixed(1)
+                
+                ++modWidth
             })
         }
 
@@ -215,42 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         }
 
-        setItemsWidth() {
-            const screenWidth = window.innerWidth
-            this.widthItem = +Number(screenWidth / this.columns).toFixed(1)
-
-            this.items.forEach(item => {
-                item.style.width = `${this.widthItem}px`
-            })
-        }
-
-        setItemsPosition() {
-            let modWidth = 0
-            let modHeight = 0
-            let type = 0
-
-            const image = this.items[0].querySelector('.gallery__image')
-            this.heightItem = this.heightGallery = +Number(image.getBoundingClientRect().height).toFixed(1) 
-
-            this.items.forEach((item, index) => {
-                ++type
-                if (modWidth === this.columns) {
-                    this.heightGallery += this.heightItem
-                    modWidth = 0
-                    ++modHeight
-                    type = 1
-                }
-
-                item.dataset.index = type
-                item.dataset.startx = +Number(this.widthItem * modWidth).toFixed(1)
-                item.dataset.starty = +Number(this.heightItem * modHeight).toFixed(1)
-                item.dataset.currenty = +Number(this.heightItem * modHeight).toFixed(1)
-                item.style.transform = `translate3d(${this.widthItem * modWidth}px, ${this.heightItem * modHeight}px, 1px)`
-
-                ++modWidth
-            })
-        }
-
         animate(el, {timing, draw, duration}) {
     
             let start = performance.now()
@@ -278,6 +309,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 return 2 * timeFraction / 2
             else
                 return (2 - 2 * (1 - timeFraction)) / 2
+        }
+
+        setActiveItems(index) {
+            this.items.forEach(item => {
+                item.dataset.index == index ? 
+                    item.classList.add('--active') : 
+                    item.classList.remove('--active')
+            })
+        }
+
+        checkScreen() {
+            const width = window.innerWidth
+            if (width >= 1200) {
+                this.columns = 5
+            } else if (width < 1200 && width >= 1024) {
+                this.columns = 4
+            } else if (width < 1024 && width >= 768) {
+                this.columns = 3
+            } else {
+                this.columns = 2
+            }
         }
     }
 

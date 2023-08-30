@@ -65,13 +65,26 @@ a {
         left: 0;
         will-change: transform;
         overflow: hidden;
+        &:hover{
+            background-color: #28282b;
+            & .gallery__content {
+                opacity: 1;
+            }
+            & .gallery__name,
+            & .gallery__model,
+            & .gallery__type {
+                transform: translate3d(0, 0, 0);
+                transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1), linear;
+            }
+        }
+        &.--open,
         &.--active {
             & .gallery__image {
                 opacity: 0.6;
             }
         }
-        &:hover{
-            background-color: #28282b;
+        &.--open {
+            z-index: 1;
             & .gallery__content {
                 opacity: 1;
             }
@@ -89,7 +102,7 @@ a {
         position: absolute;
         top: 0;
         left: 0;
-        opacity: 0.2;
+        opacity: 0.15;
         background-color: #1c1c1e;
         transition: opacity 0.2s linear;
         cursor: pointer;

@@ -9,13 +9,19 @@ html(lang="en")
     body
         .wrapper 
             - var n = 0
+            - var g = 0
             .gallery
                 ul.gallery__list
-                    while n < 20
+                    while n < 34
                         - n++
                         li.gallery__item
                             a(class="gallery__link" target="_blank")
-                                img(class="gallery__image", src="image.webp", alt="Картинка")
+                                img(
+                                    src= n + "-497x600.jpg" 
+                                    srcset= n + "-497x600.jpg 497w," + n + "-662x800.jpg 662w," + n + "-994x1200.jpg 994w," + n + "-1325x1600.jpg 1325w" 
+                                    sizes="20vw" 
+                                    alt="Фото монтажа"
+                                    class="gallery__image")
                                 img(class="gallery__spacer", src="29x35.gif", alt="Картинка")
                                 .gallery__content
                                     .gallery__name Ecomaster
